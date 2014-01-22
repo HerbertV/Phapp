@@ -122,6 +122,75 @@ you may inherit your views from PhappPDOView and call query() like this:
 		}
 	}
 
+CuPhapp extension
+---------------
+Cu stands for [Clean URL](http://en.wikipedia.org/wiki/Clean_URL). 
+So CuPhapp extends Phapp with the possibility to use clean urls instead of query strings.
+
+### Server setup
+To use CuPhapp you will need to modifiy your .htaccess file first:
+
+	RewriteEngine On
+
+	# excluded the most commonly used file extensions 
+	# everything else is forwarded to Phapp entry index.php
+	RewriteRule !\.(gif|jpg|png|css|js|html|ico|zip|rar|pdf|xml|mp4|mpg|flv|swf|mkv|ogg|avi|woff|svg|eot|ttf|jar)$ index.php
+
+	# strip multi slashes
+	RewriteCond %{REQUEST_URI} ^(.*)//(.*)$
+	RewriteRule . %1/%2 [R=301,L]
+
+### Sample 
+File 1: index.php
+	
+	<?php
+	require_once 'phapp/CuPhapp.php';
+	require_once 'SampleCuApp.php';
+	// also include your views here
+
+	$app = new SampleCuApp();
+	echo $app->work();
+
+File 2: SampleCuApp.php
+	
+	<?php
+	class SampleCuApp extends CuPhapp
+	{
+		public function work()
+		{
+			$cu = $this->cleanUrl();	
+			// total blank url redirect to default view.
+			if( count($cu['params']) == 0 ) 
+				return $this->process('DefaultView');
+			
+			// redirect to an existing view
+			if( class_exists($cu["params"][0]) )
+				return $this->process($cu["params"][0]);	
+			
+			// show error or if you want to your default view
+			return $this->process('ErrorView');
+		}
+	}
+
+Snippet for parameter evaluation in your derived CuPhappView class:
+
+	//Overrides PhappView request()
+	public function request()
+	{
+		$p = $this->params();
+
+		// check parameters are mandatory
+		if( count($p) == 0 ) 
+			return "ErrorView";
+
+		// parameter redirects to another view
+		if( $p[0] == "foo" )
+			return "FooView";
+
+		// everything is ok stay here
+		return null;
+	}
+
 Stay up to date
 ---------------
 
