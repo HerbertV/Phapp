@@ -12,32 +12,30 @@ class CuPhapp extends Phapp
 	 * Clean url array 
 	 * 
 	 * Associative Keys:
-	 *		'docroot' 	- String file on server
-	 *		'urlroot' 	- String file on web (only path)
-	 *		'protocol' 	- http or https
-	 *		'basepath' 	- String protocol + domain + urlroot
+	 *		'docroot'	- String file on server
+	 *		'urlroot'	- String file on web (only path)
+	 *		'protocol'	- http or https
+	 *		'basepath'	- String protocol + domain + urlroot
 	 *						useful for linking assets.
-	 *		'params' 	- Array of cleaned url parameters
+	 *		'params'	- Array of cleaned url parameters
 	 *
 	 * Possible Usage Scenarios for 'params':
 	 *
 	 * 1) Basic view usage www.myurl.com/Foo/
 	 *		cu['params'][0] - view name ('Foo')
 	 *
-	 * 2) I18n sample www.myurl.com/en/Foo/
-	 *		cu['params'][0] - language code ('en')
-	 *		cu['params'][1] - view name ('Foo')
-	 *
-	 * 3) View sample with additional parameter www.myurl.com/Foo/Bar
+	 * 2) Sample with additional parameter www.myurl.com/Foo/Bar
 	 *		cu['params'][0] - view name ('Foo')
 	 *		cu['params'][1] - param used by view ('Bar')
 	 *
-	 * 'params' is empty if only the base path was send.
+	 * cu['params'] is empty if only the base path was send.
+	 * 
+	 * @var Array
 	 */
 	private $cu = null;
 	
 	/**
-	 * Parses the request and returns the $cu array (see above).
+	 * Parses the request uri and returns the $cu array (see above).
 	 *
 	 * @return Array 
 	 */
@@ -48,6 +46,7 @@ class CuPhapp extends Phapp
 
 		// init cu array
 		$this->cu = array();
+		$this->cu["params"] = array();
 		
 		$uri = $_SERVER['REQUEST_URI'];
 		
